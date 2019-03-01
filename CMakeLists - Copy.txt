@@ -1,0 +1,76 @@
+cmake_minimum_required(VERSION 2.8.12)
+project(ExercisePipeline)
+
+
+set(HEADER_FILES
+   InitExercisePipeline.h
+   ExercisePipeline.h
+   InjectorHandlingPipeline.h
+   InjectorPositioningPipeline.h
+   SphereHandlingPipeline.h
+   ObjectHandlingPipeline.h
+  AdherentCellsInjectionPipeline.h
+SpherePathHandlingPipeline.h
+ICSiSimulationPipeline.h
+dialog.h
+ ui_dialog.h
+)
+
+set(SOURCE_FILES
+    InitExercisePipeline.cpp
+    ExercisePipeline.cpp  
+    InjectorHandlingPipeline.cpp
+    InjectorPositioningPipeline.cpp
+    SphereHandlingPipeline.cpp
+    SpherePathHandlingPipeline.cpp
+    ObjectHandlingPipeline.cpp
+    AdherentCellsInjectionPipeline.cpp
+ moc_dialog.cpp
+    ICSiSimulationPipeline.cpp
+   dialog.cpp
+  
+)
+set(UI_FILES
+dialog.ui
+)
+
+find_package(Qt5 COMPONENTS Core REQUIRED)
+
+if(Qt5Core_FOUND)
+    message("Simedix: Using Qt5")
+    set(QT5_NO_LINK_QTMAIN 1)
+
+    find_package(Qt5 COMPONENTS Gui OpenGL Network Core Multimedia REQUIRED)
+
+    set(EXT_QT_INCLUDES ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Multimedia_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} ${Qt5OpenGL_INCLUDE_DIRS})
+    #target_include_directories(${EXT_QT_INCLUDES})
+
+    set(EXT_QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${Qt5Multimedia_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES})
+
+    qt5_wrap_cpp(MOC_FILES ${MOC_HEADER_FILES})
+    set(MOC_FILES_GROUP "Generated")
+    qt5_wrap_ui(FORM_FILES ${UI_FILES})
+    set(FORM_FILES_GROUP "Generated")
+endif()
+
+
+
+
+
+
+
+
+
+
+find_package(SofaFramework REQUIRED)
+
+add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES}${UI_FILES})
+target_link_libraries(${PROJECT_NAME} SofaCore SofaMisc SofaMiscCollision SofaMiscEngine SofaMiscFem SofaMiscForceField SofaMiscMapping SofaMiscSolver SofaMiscTopology SofaGuiCommon)
+target_link_libraries(${PROJECT_NAME} ${EXT_QT_LIBRARIES})
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_EXERCISEPIPELINE")
+install(TARGETS ExercisePipeline
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+install(FILES ${HEADER_FILES} DESTINATION "include/sofa/gui")
+
